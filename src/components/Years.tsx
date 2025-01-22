@@ -9,11 +9,13 @@ const Years: React.FC<YearsProps> = ({ year }) => {
   return (
     <div>
       <h1 className='text-2xl mb-5'>YEAR {year}</h1>
-      <div className='flex flex-row flex-grow justify-evenly'>
+      <div className='flex flex-row'>
         <Quarters quarter={'Fall'} />
-        <Quarters quarter={'Winter'} />
-        <Quarters quarter={'Spring'} />
-        <Quarters quarter={'Summer'} />
+        <div className='flex flex-row flex-grow justify-evenly'>
+          <Quarters quarter={'Winter'} />
+          <Quarters quarter={'Spring'} />
+          <Quarters quarter={'Summer'} />
+        </div>
       </div>
     </div>
   );

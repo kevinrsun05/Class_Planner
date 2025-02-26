@@ -19,10 +19,10 @@ router.post('/', async (req, res) => {
 
 });
 
-// get all classes
+// get all classes sorted by cateogry
 router.get('/', async (req, res) => {
     try {
-        const allClasses = await pool.query("SELECT * FROM classes");
+        const allClasses = await pool.query("SELECT * FROM classes ORDER BY category ASC");
         res.json(allClasses.rows);
     } catch (err) {
         console.error(err.message);

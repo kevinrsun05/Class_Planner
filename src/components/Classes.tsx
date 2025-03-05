@@ -5,7 +5,15 @@ interface ClassesProps {
 }
 
 const Classes: React.FC<ClassesProps> = ({ course }) => {
-  return <div className='bg-gray-500 p-2 rounded-md text-white text-center text-sm'>{course}</div>;
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setData('course', course); // Store class code when dragging
+  };
+
+  return (
+    <div className='bg-gray-500 p-2 rounded-md text-white text-center text-sm cursor-pointer' draggable onDragStart={handleDragStart}>
+      {course}
+    </div>
+  );
 };
 
 export default Classes;

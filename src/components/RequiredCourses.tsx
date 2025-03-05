@@ -13,7 +13,7 @@ const RequiredCourses: React.FC = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch('http://localhost:3000/classes');
+        const response = await fetch('http://localhost:3001/classes');
         const data = await response.json();
 
         // Group courses by category

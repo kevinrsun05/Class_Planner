@@ -18,8 +18,12 @@ const insertClasses = async () => {
             ('MATH_31A', 4, 'Lower-div Math'),
             ('MATH_31B', 4, 'Lower-div Math'),
             ('PHYS_1A', 5, 'Lower-div Physics'),
+            ('PHYS_1B', 5, 'Lower-div Physics'),
             ('CS_180', 4, 'Upper-div CS'),
-            ('GE_1', 5, 'General Education')
+            ('CS_M146', 4, 'Upper-div CS Elective'),
+            ('CS_M148', 4, 'Upper-div CS Elective'),
+            ('GE_1', 5, 'General Education'),
+            ('GE_2', 5, 'General Education')
         `);
 
         console.log('✅ Data inserted successfully');

@@ -10,6 +10,7 @@ interface Class {
 const RequiredCourses: React.FC = () => {
   const [groupedCourses, setGroupedCourses] = useState<{ [key: string]: Class[] }>({});
 
+  // just runs once when component mounts
   useEffect(() => {
     const fetchClasses = async () => {
       try {

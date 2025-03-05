@@ -10,7 +10,7 @@ const Classes: React.FC<ClassesProps> = ({ course }) => {
   };
 
   return (
-    <div className='bg-gray-500 p-2 rounded-md text-white text-center text-sm cursor-pointer' draggable onDragStart={handleDragStart}>
+    <div className='bg-gray-500 p-2 rounded-md text-white text-center text-sm cursor-pointer mb-3' draggable onDragStart={handleDragStart}>
       {course}
     </div>
   );

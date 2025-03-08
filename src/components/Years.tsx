@@ -22,14 +22,14 @@ const Years: React.FC<YearsProps> = ({ year, onCourseAdded }) => {
       try {
         const response = await fetch('http://localhost:3001/schedule');
         const data = await response.json();
-        setSchedule(data.filter((entry: ScheduleEntry) => entry.year === year));
+        setSchedule(data);
       } catch (error) {
         console.error('Error fetching schedule:', error);
       }
     };
 
     fetchSchedule();
-  }, [year]);
+  }, [schedule]);
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>, quarter: string) => {
     e.preventDefault();
@@ -43,16 +43,30 @@ const Years: React.FC<YearsProps> = ({ year, onCourseAdded }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ class_id, year, quarter }),
       });
-
+      // Move class from quarter to quarter
       if (!response.ok) {
-        throw new Error('Failed to add class to schedule');
+        const updateResponse = await fetch('http://localhost:3001/schedule', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ class_id, newYear: year, newQuarter: quarter }), // 🔹 Send correct year!
+        });
+        if (!updateResponse.ok) {
+          throw new Error('Failed to move class to new year/quarter');
+        }
+        const updatedEntry = await updateResponse.json();
+
+        setSchedule(prevSchedule => {
+          return prevSchedule
+            .filter(course => course.class_id !== class_id) // Remove old class
+            .concat(updatedEntry); // Add updated class
+        });
+      } else {
+        // Add new entry to schedule so it updates in UI
+        const newEntry = await response.json();
+        setSchedule(prevSchedule => [...prevSchedule, newEntry]);
       }
 
-      // Add new entry to schedule so it updates in UI
-      const newEntry = await response.json();
-      setSchedule(prevSchedule => [...prevSchedule, newEntry]);
-
-      onCourseAdded(class_id);
+      onCourseAdded(class_id); // Add to selected courses to deal with drag and drop dissapear
 
       console.log(`Added ${class_id} to Year ${year}, ${quarter}`);
     } catch (error) {
@@ -70,17 +84,17 @@ const Years: React.FC<YearsProps> = ({ year, onCourseAdded }) => {
       <h1 className='text-2xl mb-5'>YEAR {year}</h1>
       <div className='flex flex-row'>
         <div onDrop={e => handleDrop(e, 'Fall')} onDragOver={handleDragOver}>
-          <Quarters quarter={'Fall'} schedule={schedule.filter(entry => entry.quarter === 'Fall')} />
+          <Quarters quarter={'Fall'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Fall')} />
         </div>
         <div className='flex flex-row flex-grow justify-evenly'>
           <div onDrop={e => handleDrop(e, 'Winter')} onDragOver={handleDragOver}>
-            <Quarters quarter={'Winter'} schedule={schedule.filter(entry => entry.quarter === 'Winter')} />
+            <Quarters quarter={'Winter'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Winter')} />
           </div>
           <div onDrop={e => handleDrop(e, 'Spring')} onDragOver={handleDragOver}>
-            <Quarters quarter={'Spring'} schedule={schedule.filter(entry => entry.quarter === 'Spring')} />
+            <Quarters quarter={'Spring'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Spring')} />
           </div>
           <div onDrop={e => handleDrop(e, 'Summer')} onDragOver={handleDragOver}>
-            <Quarters quarter={'Summer'} schedule={schedule.filter(entry => entry.quarter === 'Summer')} />
+            <Quarters quarter={'Summer'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Summer')} />
           </div>
         </div>
       </div>

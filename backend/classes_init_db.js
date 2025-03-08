@@ -15,6 +15,7 @@ const insertClasses = async () => {
             INSERT INTO classes (code, units, category) VALUES
             ('CS_31', 4, 'Lower-div CS'),
             ('CS_32', 4, 'Lower-div CS'),
+            ('CS_33', 5, 'Lower-div CS'),
             ('MATH_31A', 4, 'Lower-div Math'),
             ('MATH_31B', 4, 'Lower-div Math'),
             ('PHYS_1A', 5, 'Lower-div Physics'),

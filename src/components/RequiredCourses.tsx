@@ -7,10 +7,15 @@ interface Class {
   category: string;
 }
 
-const RequiredCourses: React.FC = () => {
-  const [groupedCourses, setGroupedCourses] = useState<{ [key: string]: Class[] }>({});
+interface RequiredCoursesProps {
+  selectedCourses: Set<string>; // To deal with drag and drog
+}
 
-  // just runs once when component mounts
+const RequiredCourses: React.FC<RequiredCoursesProps> = ({ selectedCourses }) => {
+  const [groupedCourses, setGroupedCourses] = useState<{ [key: string]: Class[] }>({});
+  const [inSchedule, setInSchedule] = useState<Set<string>>(new Set()); // To deal with refresh screen
+
+  // fetch classes data
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -36,13 +41,34 @@ const RequiredCourses: React.FC = () => {
     fetchClasses();
   }, []);
 
+  // fetch schedule data
+  useEffect(() => {
+    const fetchScheduledClasses = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/schedule'); // Fetch scheduled classes
+        const data = await response.json();
+
+        const scheduledSet: Set<string> = new Set(data.map((cls: { class_id: string }) => cls.class_id));
+        setInSchedule(scheduledSet);
+      } catch (err) {
+        console.error('Error fetching scheduled classes:', err);
+      }
+    };
+
+    fetchScheduledClasses();
+  }, []);
+
   const categoryElements: JSX.Element[] = [];
 
   for (const category in groupedCourses) {
     const courseElements: JSX.Element[] = [];
 
-    for (const course of groupedCourses[category]) {
-      courseElements.push(<Classes key={course.code} course={course.code} />);
+    const sortedCourses = groupedCourses[category].sort((a, b) => a.code.localeCompare(b.code));
+
+    for (const course of sortedCourses) {
+      if (!selectedCourses.has(course.code) && !inSchedule.has(course.code)) {
+        courseElements.push(<Classes key={course.code} course={course.code} />);
+      }
     }
 
     categoryElements.push(

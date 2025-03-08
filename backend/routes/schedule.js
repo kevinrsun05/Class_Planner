@@ -31,6 +31,27 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.put('/', async (req, res) => {
+    try {
+        const { class_id, newYear, newQuarter } = req.body;
+
+        const updatedEntry = await pool.query(
+            "UPDATE schedule SET year = $1, quarter = $2 WHERE class_id = $3 RETURNING *",
+            [newYear, newQuarter, class_id]
+        );
+
+        if (updatedEntry.rows.length === 0) {
+            return res.status(404).json({ error: "Class not found" });
+        }
+
+        res.json(updatedEntry.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
 router.delete('/', async (req, res) => {
     try {
         const { class_id, year, quarter } = req.body;

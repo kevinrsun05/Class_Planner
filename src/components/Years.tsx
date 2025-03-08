@@ -3,6 +3,7 @@ import Quarters from '@components/Quarters';
 
 interface YearsProps {
   year: number;
+  onCourseAdded: (courseId: string) => void;
 }
 
 interface ScheduleEntry {
@@ -12,7 +13,7 @@ interface ScheduleEntry {
   quarter: string;
 }
 
-const Years: React.FC<YearsProps> = ({ year }) => {
+const Years: React.FC<YearsProps> = ({ year, onCourseAdded }) => {
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
 
   // Fetch schedule data for the year when it changes
@@ -50,6 +51,8 @@ const Years: React.FC<YearsProps> = ({ year }) => {
       // Add new entry to schedule so it updates in UI
       const newEntry = await response.json();
       setSchedule(prevSchedule => [...prevSchedule, newEntry]);
+
+      onCourseAdded(class_id);
 
       console.log(`Added ${class_id} to Year ${year}, ${quarter}`);
     } catch (error) {

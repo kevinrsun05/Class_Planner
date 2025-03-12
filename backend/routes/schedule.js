@@ -52,9 +52,9 @@ router.put('/', async (req, res) => {
 });
 
 
-router.delete('/', async (req, res) => {
+router.delete('/:class_id', async (req, res) => {
     try {
-        const { class_id, year, quarter } = req.body;
+        const { class_id } = req.params;
 
         await pool.query(
             "DELETE FROM schedule WHERE class_id = $1 RETURNING *",

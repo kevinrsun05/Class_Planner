@@ -9,9 +9,10 @@ interface Class {
 
 interface RequiredCoursesProps {
   selectedCourses: Set<string>; // To deal with drag and drog
+  refreshSchedule: boolean;
 }
 
-const RequiredCourses: React.FC<RequiredCoursesProps> = ({ selectedCourses }) => {
+const RequiredCourses: React.FC<RequiredCoursesProps> = ({ selectedCourses, refreshSchedule }) => {
   const [groupedCourses, setGroupedCourses] = useState<{ [key: string]: Class[] }>({});
   const [inSchedule, setInSchedule] = useState<Set<string>>(new Set()); // To deal with refresh screen
 
@@ -56,7 +57,7 @@ const RequiredCourses: React.FC<RequiredCoursesProps> = ({ selectedCourses }) =>
     };
 
     fetchScheduledClasses();
-  }, []);
+  }, [refreshSchedule]);
 
   const categoryElements: JSX.Element[] = [];
 

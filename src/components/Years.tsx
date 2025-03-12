@@ -4,6 +4,7 @@ import Quarters from '@components/Quarters';
 interface YearsProps {
   year: number;
   onCourseAdded: (courseId: string) => void;
+  onCourseRemoved: (courseId: string) => void;
 }
 
 interface ScheduleEntry {
@@ -13,7 +14,7 @@ interface ScheduleEntry {
   quarter: string;
 }
 
-const Years: React.FC<YearsProps> = ({ year, onCourseAdded }) => {
+const Years: React.FC<YearsProps> = ({ year, onCourseAdded, onCourseRemoved }) => {
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
 
   // Fetch schedule data for the year when it changes
@@ -79,22 +80,56 @@ const Years: React.FC<YearsProps> = ({ year, onCourseAdded }) => {
     e.preventDefault(); //prevents default browser behavior (blocks drops)
   };
 
+  // remove class from schedule
+  const handleRemoveClass = async (class_id: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/schedule/${class_id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to remove class');
+      }
+      // Remove the class from the local state
+      setSchedule(prevSchedule => prevSchedule.filter(course => course.class_id !== class_id));
+      onCourseRemoved(class_id);
+      console.log(`Removed ${class_id} from schedule`);
+    } catch (error) {
+      console.error('Error removing class:', error);
+    }
+  };
+
   return (
     <div>
       <h1 className='text-2xl mb-5'>YEAR {year}</h1>
       <div className='flex flex-row'>
         <div onDrop={e => handleDrop(e, 'Fall')} onDragOver={handleDragOver}>
-          <Quarters quarter={'Fall'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Fall')} />
+          <Quarters
+            quarter={'Fall'}
+            schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Fall')}
+            onRemove={handleRemoveClass}
+          />
         </div>
         <div className='flex flex-row flex-grow justify-evenly'>
           <div onDrop={e => handleDrop(e, 'Winter')} onDragOver={handleDragOver}>
-            <Quarters quarter={'Winter'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Winter')} />
+            <Quarters
+              quarter={'Winter'}
+              schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Winter')}
+              onRemove={handleRemoveClass}
+            />
           </div>
           <div onDrop={e => handleDrop(e, 'Spring')} onDragOver={handleDragOver}>
-            <Quarters quarter={'Spring'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Spring')} />
+            <Quarters
+              quarter={'Spring'}
+              schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Spring')}
+              onRemove={handleRemoveClass}
+            />
           </div>
           <div onDrop={e => handleDrop(e, 'Summer')} onDragOver={handleDragOver}>
-            <Quarters quarter={'Summer'} schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Summer')} />
+            <Quarters
+              quarter={'Summer'}
+              schedule={schedule.filter(entry => entry.year == year && entry.quarter === 'Summer')}
+              onRemove={handleRemoveClass}
+            />
           </div>
         </div>
       </div>
